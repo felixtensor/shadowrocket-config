@@ -1,0 +1,8 @@
+#!name=Corp Direct Example
+#!desc=公司私网与指定公网 IP 直连模板
+
+[Rule]
+IP-CIDR,10.20.30.0/24,DIRECT,no-resolve
+IP-CIDR,10.40.50.0/24,DIRECT,no-resolve
+IP-CIDR,10.60.70.0/24,DIRECT,no-resolve
+IP-CIDR,203.0.113.10/32,DIRECT,no-resolve

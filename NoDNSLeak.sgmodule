@@ -1,0 +1,21 @@
+#!name=No DNS Leak
+#!desc=直连域名使用国内 DoH，代理域名远端解析，禁止公网 DNS 回落至 system
+
+[General]
+dns-server = https://dns.alidns.com/dns-query#no-h3, https://doh.pub/dns-query#no-h3
+fallback-dns-server = https://1.1.1.1/dns-query#proxy, https://dns.google/dns-query#proxy
+ipv6 = false
+prefer-ipv6 = false
+dns-direct-system = false
+dns-direct-fallback-proxy = true
+private-ip-answer = true
+always-ip-address = false
+hijack-dns = 8.8.8.8:53, 8.8.4.4:53, 1.1.1.1:53, 1.0.0.1:53, 9.9.9.9:53, 223.5.5.5:53, 119.29.29.29:53
+udp-policy-not-supported-behaviour = REJECT
+block-quic = all-proxy
+
+[Host]
+dns.alidns.com = 223.5.5.5
+doh.pub = 119.29.29.29
+*.local = server:system
+localhost = 127.0.0.1
