@@ -63,7 +63,7 @@ DOMAIN-SUFFIX,corp.example,DIRECT
 DIRECT 域名及意外预解析 -> Cloudflare DoH，经代理
 DIRECT DNS 失败回退      -> Google DoH，经代理
 PROXY 域名               -> 代理服务器远端解析
-代理节点域名             -> AliDNS DoH，直连 bootstrap
+代理节点域名             -> AliDNS / DNSPod DoH，直连 bootstrap
 普通 UDP/TCP 53          -> Shadowrocket 全量劫持
 局域网和公司内网域名     -> system 或指定内网 DNS
 ```

@@ -4,7 +4,7 @@
 [General]
 dns-server = https://1.1.1.1/dns-query#proxy
 fallback-dns-server = https://dns.google/dns-query#proxy
-proxy-dns-server = https://dns.alidns.com/dns-query#no-h3
+proxy-dns-server = https://dns.alidns.com/dns-query#no-h3,https://doh.pub/dns-query#no-h3
 ipv6 = false
 prefer-ipv6 = false
 ipv6-only-if-no-ipv4-dns = false
@@ -20,6 +20,7 @@ block-quic = all-proxy
 
 [Host]
 dns.alidns.com = 223.5.5.5
+doh.pub = 1.12.12.12
 *.local = server:system
 *.lan = server:system
 *.home.arpa = server:system
