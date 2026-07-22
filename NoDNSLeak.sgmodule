@@ -1,21 +1,29 @@
 #!name=No DNS Leak
-#!desc=直连域名使用国内 DoH，代理域名远端解析，禁止公网 DNS 回落至 system
+#!desc=直连域名使用国内 DoH，代理域名远端解析，公网回退只经代理
 
 [General]
-dns-server = https://dns.alidns.com/dns-query#no-h3, https://doh.pub/dns-query#no-h3
+# 仅解析被规则判定为 DIRECT 的公网域名。
+dns-server = https://dns.alidns.com/dns-query#no-h3
+# 留空等同 system；显式指定经代理的海外 DoH，避免失败时回落物理网卡 DNS。
 fallback-dns-server = https://1.1.1.1/dns-query#proxy, https://dns.google/dns-query#proxy
+# 代理建立前解析节点域名，不能使用依赖当前代理的 DNS-over-PROXY。
+proxy-dns-server = https://dns.alidns.com/dns-query#no-h3
 ipv6 = false
 prefer-ipv6 = false
+ipv6-only-if-no-ipv4-dns = false
 dns-direct-system = false
 dns-direct-fallback-proxy = true
 private-ip-answer = true
 always-ip-address = false
+use-local-host-item-for-proxy = false
+allow-dns-svcb = false
 hijack-dns = *:53
 udp-policy-not-supported-behaviour = REJECT
 block-quic = all-proxy
 
 [Host]
 dns.alidns.com = 223.5.5.5
-doh.pub = 119.29.29.29
 *.local = server:system
+*.lan = server:system
+*.home.arpa = server:system
 localhost = 127.0.0.1

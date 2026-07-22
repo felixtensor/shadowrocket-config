@@ -2,7 +2,14 @@
 #!desc=公司私网与指定公网 IP 直连模板
 
 [Rule]
+# 如需内网域名，替换后取消下一行注释。
+# DOMAIN-SUFFIX,corp.example,DIRECT
 IP-CIDR,10.20.30.0/24,DIRECT,no-resolve
 IP-CIDR,10.40.50.0/24,DIRECT,no-resolve
 IP-CIDR,10.60.70.0/24,DIRECT,no-resolve
 IP-CIDR,203.0.113.10/32,DIRECT,no-resolve
+
+[Host]
+# 二选一：跟随当前网络的系统 DNS，或明确指定公司 DNS。
+# *.corp.example = server:system
+# *.corp.example = server:10.20.30.53
