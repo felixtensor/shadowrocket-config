@@ -1,8 +1,8 @@
-#!name=Corp Direct Example
-#!desc=公司私网与指定公网 IP 直连模板
+#!name=Corp Direct for Main Config
+#!desc=在 Main.conf 之前匹配公司网段与内网域名
 
 [Rule]
-# 如需内网域名，替换后取消下一行注释。
+# 模块规则优先于 Main.conf。如需内网域名，替换后取消下一行注释。
 # DOMAIN-SUFFIX,corp.example,DIRECT
 IP-CIDR,10.20.30.0/24,DIRECT,no-resolve
 IP-CIDR,10.40.50.0/24,DIRECT,no-resolve
