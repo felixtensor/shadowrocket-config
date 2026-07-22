@@ -1,15 +1,15 @@
 # Shadowrocket Config
 
-适用于 macOS、iOS 和 iPadOS 的 Shadowrocket 覆盖模块，负责局域网直连和 DNS 防污染。
-代理节点、订阅及远程规则集仍由主配置管理。
+适用于 macOS、iOS 和 iPadOS 的 Shadowrocket 覆盖模块：局域网直连、国内域名使用国内
+DoH，国外和未知域名由代理端解析。节点、订阅和主分流规则仍由主配置管理。
 
 ## 文件
 
 | 文件 | 用途 |
 | --- | --- |
-| `LANDirect.sgmodule` | RFC 1918 私网直连及常见 LAN 旁路 |
-| `NoDNSLeak.sgmodule` | 国内 DoH、代理远端解析和 DNS 回退 |
-| `CorpDirect.example.sgmodule` | 私有公司 IP 模块的脱敏模板 |
+| `LANDirect.sgmodule` | 私网直连及常见 LAN 旁路 |
+| `NoDNSLeak.sgmodule` | DNS 分流、代理回退和 53 端口劫持 |
+| `CorpDirect.example.sgmodule` | 公司网段与内网 DNS 模板 |
 
 仓库不包含节点、订阅链接、凭据、私钥或证书。
 
@@ -22,19 +22,11 @@ https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/LANDirect
 https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/NoDNSLeak.sgmodule
 ```
 
-启用模块后，对当前主配置执行一次“使用配置”，再断开并重新连接 Shadowrocket。
+启用后对当前主配置执行一次“使用配置”，再断开并重新连接 Shadowrocket。
 
-## 私有模块
+## Shadowrocket 设置
 
-`CorpDirect.example.sgmodule` 仅作为格式模板。复制为 `CorpDirect.sgmodule` 并替换成真实
-CIDR 后在本地使用。
-
-真实文件已由 `.gitignore` 排除，不会进入公开仓库，可通过 Shadowrocket iCloud 同步到
-Mac、iPhone 和 iPad。
-
-## 必要设置
-
-- `设置 > 代理 > 代理类型 > None`：TUN Only。
+- `设置 > 代理 > 代理类型 > None`（TUN Only）。
 - `设置 > 隧道 > 强制路由`：开启。
 - `设置 > 隧道 > 包括所有网络`：开启。
 - `设置 > 隧道 > 包括本地网络`：关闭。
@@ -44,44 +36,75 @@ Mac、iPhone 和 iPad。
 - `设置 > UDP > 禁用 STUN`：开启。
 - 全局路由：选择“配置”。
 
-“包括所有网络”扩大 TUN 接管范围，但流量仍由当前配置决定 `DIRECT` 或 `PROXY`。
-关闭“包括本地网络”以保留局域网兼容性，并继续启用 `LANDirect.sgmodule`，为进入
-TUN 的私网流量提供明确的 CIDR 直连保障。
+需要严格接管 APNs 或蜂窝系统服务时可分别开启；若推送、Wi-Fi Calling、MMS 或语音
+信箱异常，应恢复关闭。
 
-不要在其他启用的模块或主配置覆盖中重复声明相同的 `[General]` DNS 键。旧版
-`bypass-system` 已被社区手册标记为弃用，不应加入本配置。
+不要添加已弃用的 `bypass-system`。其他模块和主配置不要重复设置 `dns-server`、
+`fallback-dns-server`、`proxy-dns-server` 或 `hijack-dns`。
 
-## 行为
+## 主配置必须修改
 
-路由：
+模块不能修正主配置的规则顺序。主配置需要同时满足：
 
-- `10.0.0.0/8`：`DIRECT`，仍由 TUN 接管。
-- `172.16.0.0/12`、`192.168.0.0/16`：`DIRECT`，同时旁路 TUN。
-- 回环、链路本地、组播和广播地址旁路 TUN。
-- 私有 `CorpDirect.sgmodule` 中的地址使用 `DIRECT,no-resolve`。
+1. 中国域名规则在前并使用 `DIRECT`。
+2. 所有 `IP-CIDR`、`IP-ASN`、`GEOIP` 和 IP 规则集使用 `no-resolve`。
+3. 未知域名最终使用代理策略。
 
-DNS：
+末尾可参考：
 
 ```text
-DIRECT  -> AliDNS / DNSPod DoH
-PROXY   -> 代理服务器远端解析
-Fallback -> Cloudflare / Google DoH，经当前代理
-.local  -> Apple 系统解析器
+# 已有可靠的中国域名集时，不要重复添加
+DOMAIN-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/ChinaMax/ChinaMax_Domain.list,DIRECT
+
+GEOIP,CN,DIRECT,no-resolve
+FINAL,PROXY
 ```
 
-公网查询不会主动回落到系统 DNS。应用自行使用的 DoH 属于普通 HTTPS 流量，不在
-`hijack-dns` 的拦截范围内。
+若代理策略不叫 `PROXY`，替换为实际策略名。把现有 IP 类规则也改为：
+
+```text
+IP-CIDR,91.108.4.0/22,PROXY,no-resolve
+RULE-SET,<中国 IP 规则集 URL>,DIRECT,no-resolve
+```
+
+`no-resolve` 使域名跳过 IP 规则，避免未知国外域名先经国内 DNS 解析、再落入代理，
+这正是检测时同时出现国内 DNS 和代理出口 DNS 的常见原因。直接访问 IP 仍可匹配。
+
+第三方远程主配置应先复制或 fork 后修改，否则更新订阅会覆盖改动。
+
+## 公司内网
+
+复制 `CorpDirect.example.sgmodule` 为 `CorpDirect.sgmodule`，替换真实 CIDR 和域名后在本地
+使用；该文件已被 `.gitignore` 排除。
+
+内网域名需要同时配置 `DOMAIN-SUFFIX,...,DIRECT` 和 `[Host]` 解析器。模板提供
+`server:system` 与指定公司 DNS 两种写法，只选一种。
+
+## DNS 行为
+
+```text
+国内域名     -> AliDNS DoH
+国外/未知域名 -> 代理服务器远端解析
+代理节点域名 -> AliDNS DoH（建立代理前）
+DIRECT 回退  -> Cloudflare/Google DoH，经代理
+局域网域名   -> system，仅限 .local、.lan、.home.arpa 和自定义公司后缀
+```
+
+浏览器或应用自带 DoH 不受 `hijack-dns` 拦截。建议关闭浏览器“安全 DNS”，或确保其 DoH
+服务域名命中代理规则。
 
 ## 验证
 
-在 `数据 > 代理 > DNS` 开启日志，确认：
+在 `数据 > 代理 > DNS` 开启日志，并在 `配置 > 测试规则` 检查：
 
-- 公网 DIRECT 查询不使用 `system`。
-- PROXY 域名由代理端解析。
-- 私网和私有模块地址命中 `DIRECT`。
-- DNS 泄露测试不显示本地运营商 DNS。
+```text
+www.baidu.com                     -> 中国域名规则 / DIRECT
+www.google.com                    -> 国外域名规则 / PROXY
+随机字符串.dns4.browserleaks.net -> FINAL / PROXY
+```
 
-测试工具：
+重新测试后，不应出现本地运营商、AliDNS 或 DNSPod；出现代理出口地区的 Cloudflare、
+Google 或代理服务端解析器属于正常结果。Cloudflare 显示多个 IPv4/IPv6 递归出口也正常。
 
 - <https://www.dnsleaktest.com/>
 - <https://browserleaks.com/dns>
@@ -89,7 +112,9 @@ Fallback -> Cloudflare / Google DoH，经当前代理
 
 ## 参考
 
-- [Shadowrocket 社区使用手册](https://github.com/LOWERTOP/Shadowrocket)
-- [IANA IPv4 Special-Purpose Address Space](https://www.iana.org/assignments/iana-ipv4-special-registry/iana-ipv4-special-registry.xhtml)
+- [Shadowrocket 社区使用手册](https://lowertop.github.io/Shadowrocket/)
+- [Shadowrocket-First Wiki](https://github.com/LOWERTOP/Shadowrocket-First/wiki)
+- [Shadowrocket-ADBlock-Rules-Forever](https://johnshall.github.io/Shadowrocket-ADBlock-Rules-Forever/)
+- [Blackmatrix7 ChinaMax](https://github.com/blackmatrix7/ios_rule_script/tree/master/rule/Shadowrocket/ChinaMax)
 
-本仓库不提供代理服务。LOWERTOP 手册由社区维护，并非 Shadowrocket 官方文档。
+本仓库不提供代理服务；上述 Shadowrocket 手册由社区维护，并非官方文档。
