@@ -60,25 +60,33 @@ DOMAIN-SUFFIX,corp.example,DIRECT
 ## DNS 行为
 
 ```text
-DIRECT 域名及意外预解析 -> Cloudflare DoH，经代理
-DIRECT DNS 失败回退      -> Google DoH，经代理
+DIRECT 域名             -> AliDNS / DNSPod DoH，直连
+DIRECT DNS 失败回退      -> Cloudflare DoH，经代理
 PROXY 域名               -> 代理服务器远端解析
 代理节点域名             -> AliDNS / DNSPod DoH，直连 bootstrap
 普通 UDP/TCP 53          -> Shadowrocket 全量劫持
 局域网和公司内网域名     -> system 或指定内网 DNS
 ```
 
-节点域名必须在代理建立前解析，因此 AliDNS bootstrap 不能依赖当前代理。浏览器或应用自带
-DoH/DoQ 不使用 53 端口，建议关闭浏览器“安全 DNS”，或确认其 DNS 服务域名走代理。
+国内域名先由 `RULE-SET` / `DOMAIN-SET` 命中 `DIRECT`，再使用国内 DoH 获取适合当前网络
+的 CDN 地址；国外和未知域名命中代理策略后由代理服务器远端解析。`GEOIP,CN` 仅使用设备
+中已安装的 Country MMDB 兜底直接 IP 连接，不触发域名预解析。
+
+节点域名必须在代理建立前解析，因此国内 DoH bootstrap 不能依赖当前代理。浏览器或应用
+自带 DoH/DoQ 不使用 53 端口，建议关闭浏览器“安全 DNS”，或确认其 DNS 服务域名走代理。
 
 ## 验证
 
 在 `数据 > 代理 > DNS` 开启日志，并在 `配置 > 测试规则` 检查：
 
 ```text
-www.baidu.com                     -> DIRECT
+www.xiaohongshu.com               -> DIRECT
+sns-webpic-qc.xhscdn.com          -> DIRECT
+tieba.baidu.com                   -> DIRECT
 www.google.com                    -> 代理策略
-随机字符串.dns4.browserleaks.net -> FINAL / PROXY
+随机字符串.dns4.browserleaks.net  -> FINAL / PROXY
+223.5.5.5                         -> GEOIP CN / DIRECT
+1.1.1.1                           -> FINAL / PROXY
 ```
 
 重新连接后测试：
@@ -87,8 +95,9 @@ www.google.com                    -> 代理策略
 - <https://browserleaks.com/dns>
 - <https://ipleak.net/>
 
-测试域名不应由本地运营商、AliDNS 或 DNSPod 解析。显示代理出口侧的 Cloudflare、Google
-或代理服务商递归 DNS 属于正常结果；DNS IP 不需要与代理出口 IP 相同。
+DNS 泄露测试生成的未知域名不应由本地运营商、AliDNS 或 DNSPod 解析。国内直连域名使用
+AliDNS / DNSPod 属于预期行为；测试页显示代理出口侧的 Cloudflare、Google 或代理服务商
+递归 DNS 也属于正常结果，DNS IP 不需要与代理出口 IP 相同。
 
 ## 维护约束
 
@@ -100,4 +109,5 @@ www.google.com                    -> 代理策略
 
 更新上游时不要直接覆盖 `Main.conf`。必须保留：DNS 仅由模块管理、所有 IP 型规则与
 `RULE-SET` 使用 `no-resolve`、不引入公网 `server:system`/MITM、LAN 留在主配置、公司
-路由留在本地模块，以及最后一条规则始终为 `FINAL,PROXY`。
+路由留在本地模块、国内 `DIRECT` 域名使用国内 DoH、代理域名远端解析，以及最后一条规则
+始终为 `FINAL,PROXY`。

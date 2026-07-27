@@ -1,9 +1,9 @@
 #!name=No DNS Leak for Main Config
-#!desc=为 Main.conf 提供唯一 DNS 设置，所有公网本地解析只经代理
+#!desc=国内直连域名使用国内 DoH，代理域名远端解析，失败回退经代理
 
 [General]
-dns-server = https://1.1.1.1/dns-query#proxy
-fallback-dns-server = https://dns.google/dns-query#proxy
+dns-server = https://dns.alidns.com/dns-query#no-h3,https://doh.pub/dns-query#no-h3
+fallback-dns-server = https://1.1.1.1/dns-query#proxy
 proxy-dns-server = https://dns.alidns.com/dns-query#no-h3,https://doh.pub/dns-query#no-h3
 ipv6 = false
 prefer-ipv6 = false
