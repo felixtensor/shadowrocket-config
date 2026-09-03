@@ -1,6 +1,7 @@
 # YouTube.sgmodule
 
-去广告、画中画、后台播放。只对 iOS / iPadOS 的 YouTube 和 YouTube Music 客户端生效，可选。
+去广告、拦截遥测、画中画、后台播放。只对 iOS / iPadOS 的 YouTube 和 YouTube Music 客户端
+生效，可选。
 
 ## 前提
 
@@ -8,6 +9,19 @@
 
 全局路由必须选「配置」。主配置里 `always-reject-url-rewrite = false`，Shadowrocket 在这个
 设置下只有配置模式才执行 URL Rewrite 的 REJECT，切到其他模式后台播放会静默失效。
+
+## 解密范围
+
+| 主机 | 用途 |
+| --- | --- |
+| `youtubei.googleapis.com` | 响应脚本改写 player、设置页和列表接口 |
+| `*.googlevideo.com` | 打空 initplayback，以及 `&ctier`、`&oad` 两条去广告规则 |
+| `www.youtube.com`、`s.youtube.com` | 拦 `stats/ads`、`pagead`、`ptracking`、`qoe?adcontext` 遥测 |
+
+`-redirector*.googlevideo.com` 排除重定向主机，它不承载上面任何一类请求。
+
+后两个 host 上游没有，是本仓库为遥测拦截加的。不要为了缩小解密面删掉——遥测拦截是这个
+模块的功能之一，和去广告相互独立：广告是响应脚本删 `adPlacements`、`adSlots` 去的。
 
 ## 原理
 
