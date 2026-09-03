@@ -10,15 +10,15 @@
 
 | 文件 | 说明 | 订阅链接 | 文档 |
 | --- | --- | --- | --- |
-| `Main.conf` | 启用 IPv6 | [raw](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/Main.conf) | [IPv6](docs/ipv6.md) |
-| `Main_no_ipv6.conf` | 关闭 IPv6 | [raw](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/Main_no_ipv6.conf) | [IPv6](docs/ipv6.md) |
+| `Main.conf` | 启用 IPv6 | [link](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/Main.conf) | [说明](docs/ipv6.md) |
+| `Main_no_ipv6.conf` | 关闭 IPv6 | [link](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/Main_no_ipv6.conf) | [说明](docs/ipv6.md) |
 
 ## 模块
 
 | 模块 | 用途 | 必选 | 订阅链接 | 文档 |
 | --- | --- | --- | --- | --- |
-| `NoDNSLeak.sgmodule` | DNS、代理 fallback、节点 bootstrap、53 端口劫持 | 是 | [raw](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/NoDNSLeak.sgmodule) | [说明](docs/nodnsleak.md) |
-| `YouTube.sgmodule` | iOS / iPadOS 客户端去广告、拦遥测、画中画、后台播放 | 否 | [raw](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/YouTube.sgmodule) | [说明](docs/youtube.md) |
+| `NoDNSLeak.sgmodule` | DNS、代理 fallback、节点 bootstrap、53 端口劫持 | 是 | [link](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/NoDNSLeak.sgmodule) | [说明](docs/nodnsleak.md) |
+| `YouTube.sgmodule` | iOS / iPadOS 客户端去广告、拦遥测、画中画、后台播放 | 否 | [link](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/YouTube.sgmodule) | [说明](docs/youtube.md) |
 | `CorpDirect.example.sgmodule` | 公司网段与内网 DNS 模板 | 否 | 复制为本地文件 | [说明](docs/corpdirect.md) |
 
 ## 安装
@@ -57,17 +57,8 @@ www.google.com                    -> 代理策略
 
 DNS 泄露测试见 [NoDNSLeak 说明](docs/nodnsleak.md)。
 
-## 维护
+## 参考
 
-上游：[LOWERTOP](https://lowertop.github.io/Shadowrocket/lazy_group.conf)、
-[Johnshall](https://github.com/Johnshall/Shadowrocket-ADBlock-Rules-Forever)、
-[社区手册](https://github.com/LOWERTOP/Shadowrocket)。
-
-更新上游时不要直接覆盖两个主配置。必须保留：
-
-- DNS 仅由模块管理，IPv6 开关留在主配置
-- 所有 IP 型规则与 `RULE-SET` 使用 `no-resolve`
-- 不在主配置里引入公网 `server:system` 或 MITM
-- LAN 留在主配置，公司路由留在本地模块
-- 国内 `DIRECT` 域名使用国内 DoH，代理域名远端解析
-- 最后一条规则始终为 `FINAL,PROXY`
+- [LOWERTOP](https://lowertop.github.io/Shadowrocket/lazy_group.conf)
+- [Johnshall](https://github.com/Johnshall/Shadowrocket-ADBlock-Rules-Forever)
+- [社区手册](https://github.com/LOWERTOP/Shadowrocket)
