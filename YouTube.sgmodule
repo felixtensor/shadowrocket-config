@@ -3,8 +3,8 @@
 
 [Rule]
 # 阻断 UDP，让 QUIC 回落到可解密的 HTTPS，否则下面的规则和脚本都看不到流量。
-AND,((DOMAIN-SUFFIX,googlevideo.com),(PROTOCOL,UDP)),REJECT
-AND,((DOMAIN,youtubei.googleapis.com),(PROTOCOL,UDP)),REJECT
+AND,((DOMAIN-SUFFIX,googlevideo.com),(PROTOCOL,UDP)),REJECT-NO-DROP
+AND,((DOMAIN,youtubei.googleapis.com),(PROTOCOL,UDP)),REJECT-NO-DROP
 
 [URL Rewrite]
 # 末条把 initplayback 打空，让 player 响应退回明文 v1/player，详见 docs/youtube.md。
