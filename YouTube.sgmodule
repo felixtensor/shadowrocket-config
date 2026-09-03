@@ -1,5 +1,5 @@
 #!name=YouTube Enhance for Main Config
-#!desc=iOS / iPadOS 的 YouTube 与 YouTube Music 客户端去广告、画中画与后台播放。需要开启 HTTPS 解密
+#!desc=iOS / iPadOS 的 YouTube 与 YouTube Music 客户端去广告、拦截遥测、画中画与后台播放。需要开启 HTTPS 解密
 
 [Rule]
 # 阻断 UDP，让 QUIC 回落到可解密的 HTTPS，否则下面的规则和脚本都看不到流量。
@@ -7,7 +7,7 @@ AND,((DOMAIN-SUFFIX,googlevideo.com),(PROTOCOL,UDP)),REJECT-NO-DROP
 AND,((DOMAIN,youtubei.googleapis.com),(PROTOCOL,UDP)),REJECT-NO-DROP
 
 [URL Rewrite]
-# 末条把 initplayback 打空，让 player 响应退回明文 v1/player，详见 docs/youtube.md。
+# 前两条去广告，中间三条拦遥测，末条把 initplayback 打空以退回明文 v1/player。
 (^https?://[\w-]+\.googlevideo\.com/(?!dclk_video_ads).+?)&ctier=L(&.+?),ctier,(.+) $1$2$3 302
 ^https?://[\w-]+\.googlevideo\.com/(?!(?:dclk_video_ads|videoplayback\?)).+&oad _ reject-200
 ^https?://(?:www|s)\.youtube\.com/api/stats/ads _ reject-200

@@ -18,7 +18,7 @@
 | 模块 | 用途 | 必选 | 订阅链接 | 文档 |
 | --- | --- | --- | --- | --- |
 | `NoDNSLeak.sgmodule` | DNS、代理 fallback、节点 bootstrap、53 端口劫持 | 是 | [raw](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/NoDNSLeak.sgmodule) | [说明](docs/nodnsleak.md) |
-| `YouTube.sgmodule` | iOS / iPadOS 客户端去广告、画中画、后台播放 | 否 | [raw](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/YouTube.sgmodule) | [说明](docs/youtube.md) |
+| `YouTube.sgmodule` | iOS / iPadOS 客户端去广告、拦遥测、画中画、后台播放 | 否 | [raw](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/YouTube.sgmodule) | [说明](docs/youtube.md) |
 | `CorpDirect.example.sgmodule` | 公司网段与内网 DNS 模板 | 否 | 复制为本地文件 | [说明](docs/corpdirect.md) |
 
 ## 安装
