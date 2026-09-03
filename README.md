@@ -17,9 +17,12 @@
 
 | 模块 | 用途 | 必选 | 订阅链接 | 文档 |
 | --- | --- | --- | --- | --- |
-| `NoDNSLeak.sgmodule` | DNS、代理 fallback、节点 bootstrap、53 端口劫持 | 是 | [link](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/NoDNSLeak.sgmodule) | [说明](docs/nodnsleak.md) |
-| `YouTube.sgmodule` | iOS / iPadOS 客户端去广告、拦遥测、画中画、后台播放 | 否 | [link](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/YouTube.sgmodule) | [说明](docs/youtube.md) |
+| `NoDNSLeak.sgmodule` | DNS、代理 fallback、节点 bootstrap、53 端口劫持 | 是 | [link](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/modules/core/NoDNSLeak.sgmodule) | [说明](docs/nodnsleak.md) |
+| `YouTube.sgmodule` | iOS / iPadOS 客户端去广告、拦遥测、画中画、后台播放 | 否 | [link](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/modules/apps/YouTube.sgmodule) | [说明](docs/youtube.md) |
 | `CorpDirect.example.sgmodule` | 公司网段与内网 DNS 模板 | 否 | 复制为本地文件 | [说明](docs/corpdirect.md) |
+
+`modules/core/` 放改路由和 DNS 行为的模块，`modules/apps/` 放需要 HTTPS 解密的应用增强
+模块。每个模块在 `docs/` 下有一份同名文档。
 
 ## 安装
 

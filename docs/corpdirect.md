@@ -4,8 +4,8 @@
 
 ## 用法
 
-复制 `CorpDirect.example.sgmodule` 为 `CorpDirect.sgmodule`，替换成真实的 CIDR 和域名后
-启用。本地文件已被 `.gitignore` 排除，不会提交。
+在 `modules/core/` 下复制 `CorpDirect.example.sgmodule` 为 `CorpDirect.sgmodule`，替换成真实
+的 CIDR 和域名后启用。本地文件已被 `.gitignore` 排除，不会提交。
 
 模块规则优先于主配置。
 
