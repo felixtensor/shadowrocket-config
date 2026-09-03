@@ -124,7 +124,7 @@ AliDNS / DNSPod 属于预期行为；测试页显示代理出口侧的 Cloudflar
 递归 DNS 也属于正常结果，DNS IP 不需要与代理出口 IP 相同。IPv6 测试页显示本地运营商
 地址说明有流量绕过隧道。
 
-参考上游：
+## 参考上游：
 
 - [LOWERTOP lazy_group.conf](https://lowertop.github.io/Shadowrocket/lazy_group.conf)
 - [Johnshall Shadowrocket Rules](https://github.com/Johnshall/Shadowrocket-ADBlock-Rules-Forever)
