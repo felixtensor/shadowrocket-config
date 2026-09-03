@@ -6,17 +6,20 @@
 
 需要开启 HTTPS 解密并信任 CA 证书。这是仓库里唯一需要解密的模块，不用就别启用。
 
+全局路由必须选「配置」。主配置里 `always-reject-url-rewrite = false`，Shadowrocket 在这个
+设置下只有配置模式才执行 URL Rewrite 的 REJECT，切到其他模式后台播放会静默失效。
+
 ## 原理
 
 后台播放和画中画靠改写 `/youtubei/v1/player` 响应里的 `playabilityStatus`，脚本往里注入
 `backgroundPlayerRender` 和 `pictureInPictureRender`。
 
-新版客户端在部分区域改走 onesie，把 player 响应塞进发往
-`rr*.googlevideo.com/initplayback` 的加密流，明文接口不再被请求，脚本就改不到。症状是广告
-照去、后台播放和画中画失效。美区已经在推，港区还走明文，所以同一台设备换个节点表现不同。
+新版客户端会把 player 响应塞进发往 `rr*.googlevideo.com/initplayback` 的加密 onesie 流，
+明文接口不再被请求，脚本就改不到。症状是广告照去、后台播放和画中画失效。这套机制按区域
+灰度，实测同一台设备换节点表现就不同（美区不生效、港区生效），但具体覆盖范围会变。
 
-模块把 initplayback 打空，客户端退回明文 `v1/player`。这是上游脚本密钥不匹配时的既有分支，
-只是改成无条件生效，代价是起播多一次往返。
+模块把 initplayback 打空，客户端退回明文 `v1/player`。上游脚本在密钥对不上时也是返回空
+响应退回 `v1/player`，这里等价于让它无条件发生，代价是起播多一次往返。
 
 ## 使用
 
@@ -56,7 +59,7 @@
 | 做法 | reject initplayback，退回明文 `v1/player` | 重定向到 Worker 解 onesie |
 | 起播 | 多一次往返 | 保留 onesie 优化 |
 | 依赖 | 无 | `init-stream.maasea.workers.dev` |
-| 风险 | 无 | 解密密钥和完整 URL 发给第三方，服务挂掉起播失败 |
+| 风险 | 依赖 URL Rewrite 对 POST 生效，见下 | 解密密钥和完整 URL 发给第三方，服务挂掉起播失败 |
 
 要换：删掉 `[URL Rewrite]` 里 initplayback 那条，`[Script]` 整节替换成
 
@@ -67,6 +70,19 @@ youtube_request_log=type=http-request,pattern=^https://youtubei\.googleapis\.com
 ```
 
 响应脚本的 pattern 多了 `log_event|config`，onesie 密钥就在这两个路由里抓。
+
+### URL Rewrite 打不空 initplayback 时
+
+initplayback 是带 protobuf body 的 POST，Surge 和 Shadowrocket 都没有文档说明 URL Rewrite
+的 REJECT 对 POST 是否生效。如果发现那条 reject 不命中，改用上游的请求脚本，但**不要**给
+响应脚本加 `log_event|config`：
+
+```text
+youtube_request_init=type=http-request,pattern=^https?://[\w-]+\.googlevideo\.com/initplayback.+&ack.*,requires-body=1,max-size=-1,binary-body-mode=1,script-path=https://raw.githubusercontent.com/Maasea/sgmodule/65075cdb388fc5e3094afd7e7314c67b243f3525/Script/Youtube/youtube.request.js,argument="{}"
+```
+
+密钥只在 `log_event` 和 `config` 两个路由里抓，不加就永远抓不到，脚本每次都走返回空响应
+的分支，不会碰 Worker。效果和默认方案一样，代价是多一次脚本执行。
 
 ## 升级
 
