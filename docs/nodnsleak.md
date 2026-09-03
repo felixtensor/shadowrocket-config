@@ -13,9 +13,6 @@ PROXY 域名               -> 代理服务器远端解析
 局域网和公司内网域名     -> system 或指定内网 DNS
 ```
 
-国内域名用国内 DoH 是为了拿到就近的 CDN 地址。节点域名必须在代理建立前解析，所以它的
-bootstrap 不能依赖当前代理。
-
 ## 冲突
 
 不要启用其他会修改这些项的模块：`dns-server`、`direct-dns-server`、`fallback-dns-server`、
