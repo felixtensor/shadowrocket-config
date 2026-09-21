@@ -18,5 +18,5 @@
 
 - `[Host]` 里的 DoH bootstrap 固定为 IPv4，纯 IPv6 网络下要自己改成 IPv6 地址。
 - 即使 `ipv6 = false`，节点域名能解析出 AAAA 时仍会走节点的 IPv6 地址。
-- 内置 Country MMDB 是否含 IPv6 段未实测，不含时国内 IPv6 直连会落到 `FINAL,PROXY`。
+- 内置 Country MMDB 是否含 IPv6 段未知，换成 [GeoIP 说明](geoip.md) 里的数据库后已实测覆盖 CN IPv6。
 - WebRTC 的 IPv6 泄露靠 `设置 > UDP > 禁用 STUN` 兜，这项必须开。
