@@ -1,0 +1,15 @@
+# IP lookup, reputation and leak tests
+DOMAIN-SUFFIX,browserleaks.com
+DOMAIN-SUFFIX,browserleaks.net
+DOMAIN-SUFFIX,dnsleaktest.com
+DOMAIN-SUFFIX,ip.sb
+DOMAIN-SUFFIX,ipcheck.ing
+DOMAIN-SUFFIX,iphey.com
+DOMAIN-SUFFIX,ipinfo.io
+DOMAIN-SUFFIX,ipleak.net
+DOMAIN-SUFFIX,ipqualityscore.com
+DOMAIN-SUFFIX,ping0.cc
+DOMAIN-SUFFIX,pixelscan.net
+DOMAIN-SUFFIX,scamalytics.com
+DOMAIN-SUFFIX,test-ipv6.com
+DOMAIN-SUFFIX,whoer.net

@@ -40,6 +40,7 @@
 - `设置 > UDP > 启用转发`：节点支持 UDP 时开启。
 - `设置 > UDP > 禁用 STUN`：开启。
 - HTTPS 解密：默认关闭，仅启用 `YouTube.sgmodule` 时开启。
+- `设置 > GeoLite2 数据库`：填好国家与 ASN 数据源并开启自动后台更新，见 [GeoIP 说明](docs/geoip.md)。
 - `配置文件 ⓘ > 通用 > 启用IPv6`：跟随主配置，不要手动改，切换请换配置文件。
 
 ## 验证
@@ -51,13 +52,17 @@ www.xiaohongshu.com               -> DIRECT
 sns-webpic-qc.xhscdn.com          -> DIRECT
 tieba.baidu.com                   -> DIRECT
 www.google.com                    -> 代理策略
-随机字符串.dns4.browserleaks.net  -> FINAL / PROXY
+browserleaks.com                  -> PROXY
+ping0.cc                         -> PROXY
+随机字符串.dns4.browserleaks.net  -> PROXY
 223.5.5.5                         -> GEOIP CN / DIRECT
 1.1.1.1                           -> FINAL / PROXY
 240e::1                           -> GEOIP CN / DIRECT
 2606:4700:4700::1111              -> FINAL / PROXY
 ```
 
+常见 IP 查询、纯度和泄露检测站点统一走代理，列表维护在 [rules/IPCheck.list](rules/IPCheck.list)。
+修改后重新“使用配置”更新规则集，页面 IP 应为节点出口 IP。
 DNS 泄露测试见 [NoDNSLeak 说明](docs/nodnsleak.md)。
 
 ## 参考
