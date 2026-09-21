@@ -13,6 +13,9 @@ PROXY 域名               -> 代理服务器远端解析
 局域网和公司内网域名     -> system 或指定内网 DNS
 ```
 
+`direct-dns-server` 只覆盖域名类直连规则命中的域名，`GEOIP,CN` 触发的直连解析走
+`dns-server`。本仓库两项填的是同一组国内 DoH。
+
 ## 冲突
 
 不要启用其他会修改这些项的模块：`dns-server`、`direct-dns-server`、`fallback-dns-server`、
