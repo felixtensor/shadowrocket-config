@@ -1,15 +1,28 @@
-# IP lookup, reputation and leak tests
+# IP check sites. Keep domestic sources (ipip.net, cip.cc, ip138.com) out:
+# they show the DIRECT view on purpose.
+DOMAIN,ip.istatmenus.app
+DOMAIN,ip.skk.moe
 DOMAIN-SUFFIX,browserleaks.com
 DOMAIN-SUFFIX,browserleaks.net
+DOMAIN-SUFFIX,checkip.pw
 DOMAIN-SUFFIX,dnsleaktest.com
+DOMAIN-SUFFIX,ifconfig.cc
+DOMAIN-SUFFIX,ifconfig.me
+DOMAIN-SUFFIX,ip-api.com
 DOMAIN-SUFFIX,ip.sb
+DOMAIN-SUFFIX,ipapi.is
 DOMAIN-SUFFIX,ipcheck.ing
 DOMAIN-SUFFIX,iphey.com
+DOMAIN-SUFFIX,ipify.org
 DOMAIN-SUFFIX,ipinfo.io
+DOMAIN-SUFFIX,iplark.com
 DOMAIN-SUFFIX,ipleak.net
+DOMAIN-SUFFIX,ippure.com
 DOMAIN-SUFFIX,ipqualityscore.com
+DOMAIN-SUFFIX,myip.la
 DOMAIN-SUFFIX,ping0.cc
 DOMAIN-SUFFIX,pixelscan.net
 DOMAIN-SUFFIX,scamalytics.com
 DOMAIN-SUFFIX,test-ipv6.com
+DOMAIN-SUFFIX,whatismyip.com
 DOMAIN-SUFFIX,whoer.net

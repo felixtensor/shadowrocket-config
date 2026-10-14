@@ -52,17 +52,21 @@ www.xiaohongshu.com               -> DIRECT
 sns-webpic-qc.xhscdn.com          -> DIRECT
 tieba.baidu.com                   -> DIRECT
 www.google.com                    -> 代理策略
-browserleaks.com                  -> PROXY
-ping0.cc                         -> PROXY
-随机字符串.dns4.browserleaks.net  -> PROXY
+browserleaks.com                  -> IP检测
+ping0.cc                          -> IP检测
+随机字符串.dns4.browserleaks.net  -> IP检测
 223.5.5.5                         -> GEOIP CN / DIRECT
 1.1.1.1                           -> FINAL / PROXY
 240e::1                           -> GEOIP CN / DIRECT
 2606:4700:4700::1111              -> FINAL / PROXY
 ```
 
-常见 IP 查询、纯度和泄露检测站点统一走代理，列表维护在 [rules/IPCheck.list](rules/IPCheck.list)。
-修改后重新“使用配置”更新规则集，页面 IP 应为节点出口 IP。
+常见 IP 查询、纯度和泄露检测站点走 `IP检测` 策略组，列表维护在 [rules/IPCheck.list](rules/IPCheck.list)，
+修改后重新“使用配置”更新规则集。`IP检测` 默认跟随 `PROXY`，要查某个服务的出口，把它切到和该服务
+策略组相同的选项。
+
+页面显示的是节点的落地出口 IP，中转 / IPLC 节点会和订阅里的服务器地址不同，属正常。ipcheck.ing、
+ip.skk.moe 的国内来源故意走直连，那一栏显示本地 IP 说明分流正常。
 DNS 泄露测试见 [NoDNSLeak 说明](docs/nodnsleak.md)。
 
 ## 参考
