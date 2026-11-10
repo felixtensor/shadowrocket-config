@@ -1,27 +1,19 @@
 # YouTube.sgmodule
 
-去广告、拦截遥测、画中画、后台播放。只对 iOS / iPadOS 的 YouTube 和 YouTube Music 客户端
-生效，可选。
+YouTube / YouTube Music 客户端去广告、拦遥测、画中画、后台播放。只对 iOS / iPadOS 生效，
+可选。
 
 ## 前提
 
-- 开启 HTTPS 解密并信任 CA 证书。这是仓库里唯一需要解密的模块。
-- 全局路由选「配置」。其他模式下 URL Rewrite 的 REJECT 不执行，后台播放会静默失效。
+- 开启 HTTPS 解密并信任 CA 证书，范围见[解密范围](#解密范围)。不装证书就只能放弃站内去广告。
+- 全局路由选「配置」，否则 URL Rewrite 的 REJECT 不执行，后台播放静默失效。
 
 ## 使用
 
 后台播放的开关要手动开一次，脚本只负责把它注入设置页：`YouTube > 设置 > 后台播放`，在列表
-最末尾。改完模块强制退出 YouTube 重开。
+最末尾。改完强制退出 YouTube 重开。
 
 验证时换一个没看过的视频，客户端按 videoId 缓存 player 响应。
-
-## 排查
-
-| 症状 | 原因 |
-| --- | --- |
-| 广告没了，画中画和后台都没有 | 该节点走了 onesie，检查 initplayback 那条 reject 是否命中 |
-| 画中画有了，后台没有 | 设置页开关没打开，或视频有缓存 |
-| 全都没有 | HTTPS 解密没开，或全局路由不是「配置」 |
 
 ## 参数
 
@@ -40,27 +32,28 @@
 | 主机 | 用途 |
 | --- | --- |
 | `youtubei.googleapis.com` | 改写 player、设置页和列表接口 |
-| `*.googlevideo.com` | 打空 initplayback，以及两条去广告规则 |
-| `www.youtube.com`、`s.youtube.com` | 拦遥测 |
+| `www.youtube.com`、`s.youtube.com` | 拦遥测和独立广告请求 |
 
-## 实现
+视频域名 `*.googlevideo.com` 不解密。
 
-后台播放和画中画靠改写 `/youtubei/v1/player` 里的 `playabilityStatus`。新版客户端在部分
-区域把 player 响应塞进 `initplayback` 的加密 onesie 流，脚本够不到，所以模块把 initplayback
-打空，让客户端退回明文 `v1/player`。代价是起播多一次往返。
+## 限制
 
-上游的做法是重定向到作者的 Cloudflare Worker 解 onesie，起播更快，但会把解密密钥和完整
-URL 发给第三方。要换就删掉 initplayback 那条 reject，`[Script]` 整节替换成：
+画中画和后台播放靠改写 `/youtubei/v1/player` 的 `playabilityStatus`，去广告靠删除同一份
+响应里的 `adPlacements`、`adSlots`。客户端在部分区域把 player 响应塞进 initplayback 的
+加密 onesie 流，脚本够不到，这些区域只剩部分去广告。
 
-```text
-youtube_response=type=http-response,pattern=^https://youtubei\.googleapis\.com/youtubei/v1/(?:browse|next|player|search|reel/reel_watch_sequence|guide|account/get_setting|get_watch|log_event|config)(?:[/?#]|$),requires-body=1,max-size=-1,binary-body-mode=1,script-path=https://raw.githubusercontent.com/Maasea/sgmodule/65075cdb388fc5e3094afd7e7314c67b243f3525/Script/Youtube/youtube.response.js,argument="{}"
-youtube_request_init=type=http-request,pattern=^https?://[\w-]+\.googlevideo\.com/initplayback.+&ack.*,requires-body=1,max-size=-1,binary-body-mode=1,script-path=https://raw.githubusercontent.com/Maasea/sgmodule/65075cdb388fc5e3094afd7e7314c67b243f3525/Script/Youtube/youtube.request.js,argument="{}"
-youtube_request_log=type=http-request,pattern=^https://youtubei\.googleapis\.com/youtubei/v1/log_event,requires-body=1,max-size=-1,binary-body-mode=1,script-path=https://raw.githubusercontent.com/Maasea/sgmodule/65075cdb388fc5e3094afd7e7314c67b243f3525/Script/Youtube/youtube.request.js
-```
+上游 [Maasea/sgmodule](https://github.com/Maasea/sgmodule) 的完整方案会解密
+`*.googlevideo.com`，由 `youtube.request.js` 把 initplayback 重定向到作者的 Cloudflare
+Worker 解 onesie。Worker 只承担 onesie 的加解密，TLS 仍在手机上终结，视频流量和 QUIC
+回退的开销都在本机。
 
-initplayback 是 POST，两家手册都没说 URL Rewrite 的 REJECT 对 POST 是否生效。真不命中就只
-加上面的 `youtube_request_init` 一行，别给响应脚本加 `log_event|config`——密钥抓不到，脚本
-就恒走返回空响应的分支，不碰 Worker。
+## 排查
+
+| 症状 | 原因 |
+| --- | --- |
+| 广告、画中画、后台都不稳定 | 客户端走了 onesie，见[限制](#限制) |
+| 画中画有了，后台没有 | 设置页开关没打开，或视频有缓存 |
+| 全都没有 | HTTPS 解密没开，或全局路由不是「配置」 |
 
 ## 升级
 

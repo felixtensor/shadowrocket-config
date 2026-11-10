@@ -1,23 +1,20 @@
 #!name=YouTube Enhance for Main Config
-#!desc=iOS / iPadOS 的 YouTube 与 YouTube Music 客户端去广告、拦截遥测、画中画与后台播放。需要开启 HTTPS 解密
+#!desc=iOS / iPadOS 的 YouTube 与 YouTube Music 客户端去广告、拦截遥测、画中画与后台播放。只解密接口域名
 
 [Rule]
-# 阻断 UDP，让 QUIC 回落到可解密的 HTTPS，否则下面的规则和脚本都看不到流量。
-AND,((DOMAIN-SUFFIX,googlevideo.com),(PROTOCOL,UDP)),REJECT-NO-DROP
+# youtubei 走 QUIC 时响应脚本看不到流量，把它赶回 TCP。
+# googlevideo 不解密，视频继续走 QUIC。
 AND,((DOMAIN,youtubei.googleapis.com),(PROTOCOL,UDP)),REJECT-NO-DROP
 
 [URL Rewrite]
-# 前两条去广告，中间三条拦遥测，末条把 initplayback 打空以退回明文 v1/player。
-(^https?://[\w-]+\.googlevideo\.com/(?!dclk_video_ads).+?)&ctier=L(&.+?),ctier,(.+) $1$2$3 302
-^https?://[\w-]+\.googlevideo\.com/(?!(?:dclk_video_ads|videoplayback\?)).+&oad _ reject-200
+# 拦遥测和独立广告请求；这三条都落在下面 MITM 的域名里。
 ^https?://(?:www|s)\.youtube\.com/api/stats/ads _ reject-200
 ^https?://(?:www|s)\.youtube\.com/(?:pagead|ptracking) _ reject-200
 ^https?://s\.youtube\.com/api/stats/qoe\?adcontext _ reject-200
-^https?://[\w-]+\.googlevideo\.com/initplayback.+&ack _ reject-200
 
 [Script]
-# argument 传空 JSON 表示使用脚本默认值，可选参数与升级方式见 docs/youtube.md。
+# argument 传空 JSON 表示使用脚本默认值，可选参数与取舍见 docs/youtube.md。
 youtube_response=type=http-response,pattern=^https://youtubei\.googleapis\.com/youtubei/v1/(?:browse|next|player|search|reel/reel_watch_sequence|guide|account/get_setting|get_watch)(?:[/?#]|$),requires-body=1,max-size=-1,binary-body-mode=1,script-path=https://raw.githubusercontent.com/Maasea/sgmodule/65075cdb388fc5e3094afd7e7314c67b243f3525/Script/Youtube/youtube.response.js,argument="{}"
 
 [MITM]
-hostname = %APPEND% -redirector*.googlevideo.com,*.googlevideo.com,s.youtube.com,www.youtube.com,youtubei.googleapis.com
+hostname = %APPEND% s.youtube.com,www.youtube.com,youtubei.googleapis.com
