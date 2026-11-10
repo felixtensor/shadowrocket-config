@@ -1,5 +1,5 @@
 #!name=No DNS Leak for Main Config
-#!desc=国内直连域名使用国内 DoH，代理域名远端解析，失败回退经代理。IPv6 开关由主配置决定，Main.conf 和 Main_no_ipv6.conf 共用本模块
+#!desc=国内直连域名使用国内 DoH，代理域名远端解析，失败回退经代理，STUN 使用伪装应答。IPv6 开关由主配置决定，Main.conf 和 Main_no_ipv6.conf 共用本模块
 
 [General]
 dns-server = https://dns.alidns.com/dns-query#no-h3,https://doh.pub/dns-query#no-h3
@@ -15,6 +15,8 @@ allow-dns-svcb = false
 hijack-dns = *:53
 udp-policy-not-supported-behaviour = REJECT
 block-quic = all-proxy
+stun-response-ip = 1.1.1.1
+stun-response-ipv6 = ::1
 
 [Host]
 dns.alidns.com = 223.5.5.5

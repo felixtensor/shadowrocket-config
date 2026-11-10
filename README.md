@@ -52,6 +52,9 @@ www.xiaohongshu.com               -> DIRECT
 sns-webpic-qc.xhscdn.com          -> DIRECT
 tieba.baidu.com                   -> DIRECT
 www.google.com                    -> 代理策略
+www.apple.com                     -> 苹果服务（默认 DIRECT）
+www.icloud.com                    -> 苹果服务（默认 DIRECT）
+gspe1-ssl.ls.apple.com             -> PROXY（AppleNews 优先）
 browserleaks.com                  -> IP检测
 ping0.cc                          -> IP检测
 随机字符串.dns4.browserleaks.net  -> IP检测
