@@ -17,7 +17,7 @@
 
 | 模块 | 用途 | 必选 | 订阅链接 | 文档 |
 | --- | --- | --- | --- | --- |
-| `NoDNSLeak.sgmodule` | DNS、代理 fallback、节点 bootstrap、53 端口劫持 | 是 | [link](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/modules/core/NoDNSLeak.sgmodule) | [说明](docs/nodnsleak.md) |
+| `NoDNSLeak.sgmodule` | DNS、代理 fallback、节点 bootstrap、53 端口劫持、STUN 伪装应答 | 是 | [link](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/modules/core/NoDNSLeak.sgmodule) | [说明](docs/nodnsleak.md) |
 | `YouTube.sgmodule` | iOS / iPadOS 客户端去广告、拦遥测、画中画、后台播放 | 否 | [link](https://raw.githubusercontent.com/felixtensor/shadowrocket-config/main/modules/apps/YouTube.sgmodule) | [说明](docs/youtube.md) |
 | `CorpDirect.example.sgmodule` | 公司网段与内网 DNS 模板 | 否 | 复制为本地文件 | [说明](docs/corpdirect.md) |
 
@@ -38,7 +38,7 @@
 - `设置 > 隧道 > 包括所有网络`：开启。
 - `设置 > 隧道 > 包括本地网络`：关闭。
 - `设置 > UDP > 启用转发`：节点支持 UDP 时开启。
-- `设置 > UDP > 禁用 STUN`：开启。
+- `设置 > UDP > 禁用 STUN`：开启，供未配置伪装应答时使用；模块启用时以伪装应答为准。
 - HTTPS 解密：默认关闭，仅启用 `YouTube.sgmodule` 时开启。
 - `设置 > GeoLite2 数据库`：填好国家与 ASN 数据源并开启自动后台更新，见 [GeoIP 说明](docs/geoip.md)。
 - `配置文件 ⓘ > 通用 > 启用IPv6`：跟随主配置，不要手动改，切换请换配置文件。
@@ -52,6 +52,9 @@ www.xiaohongshu.com               -> DIRECT
 sns-webpic-qc.xhscdn.com          -> DIRECT
 tieba.baidu.com                   -> DIRECT
 www.google.com                    -> 代理策略
+www.apple.com                     -> 苹果服务（默认 DIRECT）
+www.icloud.com                    -> 苹果服务（默认 DIRECT）
+gspe1-ssl.ls.apple.com             -> PROXY（AppleNews 优先）
 browserleaks.com                  -> IP检测
 ping0.cc                          -> IP检测
 随机字符串.dns4.browserleaks.net  -> IP检测

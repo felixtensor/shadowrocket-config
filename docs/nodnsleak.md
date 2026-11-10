@@ -1,6 +1,6 @@
 # NoDNSLeak.sgmodule
 
-DNS、代理 fallback、节点 bootstrap 和 53 端口劫持。两份主配置共用，必选。
+DNS、代理 fallback、节点 bootstrap、53 端口劫持和 STUN 伪装应答。两份主配置共用，必选。
 
 ## 解析路径
 
@@ -16,10 +16,18 @@ PROXY 域名               -> 代理服务器远端解析
 `direct-dns-server` 只覆盖域名类直连规则命中的域名，`GEOIP,CN` 触发的直连解析走
 `dns-server`。本仓库两项填的是同一组国内 DoH。
 
+## STUN
+
+跟随 [上游 2026-10-15 基底](https://github.com/LOWERTOP/Shadowrocket/commit/e1ee7d7a201fe55cfa3ec8f93d70fd6a76a33a3f)，
+将 STUN 的 IPv4、IPv6 应答地址分别设为 `1.1.1.1`、`::1`，用于防范 WebRTC 暴露真实 IP。
+`stun-response-ipv6` 只指定伪装应答地址，不会开启 IPv6；两份主配置仍共用本模块。
+启用这两项后，[Shadowrocket 会忽略“禁用 STUN”开关](https://github.com/LOWERTOP/Shadowrocket#隐式参数)。
+可保持 `设置 > UDP > 禁用 STUN` 开启，供未配置伪装应答时使用。
+
 ## 冲突
 
 不要启用其他会修改这些项的模块：`dns-server`、`direct-dns-server`、`fallback-dns-server`、
-`proxy-dns-server`、`hijack-dns`、`[Host]`、`ipv6`。
+`proxy-dns-server`、`hijack-dns`、`stun-response-ip`、`stun-response-ipv6`、`[Host]`、`ipv6`。
 
 浏览器自带的 DoH/DoQ 不走 53 端口，劫持不到。关掉浏览器的“安全 DNS”，或确认它的 DNS 服务
 域名走代理。
